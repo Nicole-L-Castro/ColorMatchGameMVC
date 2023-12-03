@@ -3,7 +3,10 @@ package com.example.colormatchgamemvc.colormatchgame;
 import android.util.Log;
 import android.view.View;
 import android.os.Handler;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.colormatchgamemvc.MainActivity;
 import com.example.colormatchgamemvc.R;
 import java.util.Random;
 
@@ -27,6 +30,7 @@ public class ColorMatchGameController implements View.OnClickListener {
         this.colorMatchGameModel = colorMatchGameModel;
         this.colorMatchGameView = colorMatchGameView;
         this.colorMatchGameUpdater = new ColorMatchGameUpdater(colorMatchGameView);
+        colorMatchGameUpdater.updateBackgroundColor();
         initListeners();
         updateView();
         startGameLoop();
@@ -50,6 +54,7 @@ public class ColorMatchGameController implements View.OnClickListener {
         }
         colorMatchGameModel.setButtonState(newState);
         colorMatchGameView.setRotation(colorMatchGameModel.getButtonState(), getButtonDrawable(colorMatchGameModel.getButtonState()));
+        colorMatchGameUpdater.updateBackgroundColor();
     }
 
     public int getButtonDrawable(int state){
@@ -81,51 +86,56 @@ public class ColorMatchGameController implements View.OnClickListener {
         colorMatchGameView.displayRetryButton(false);
     }
 
-    private void startGameLoop(){
+    private void startGameLoop() {
         handler = new Handler();
         runnable = new Runnable() {
             @Override
             public void run() {
-                colorMatchGameView.displayRetryButton(false);
-                colorMatchGameModel.decreaseCurrentTime(100);
+                Button btnRetry = (Button) colorMatchGameView.getBtnRetry(); // Use colorMatchGameView to get the button
+                btnRetry.setVisibility(View.GONE);
+                colorMatchGameModel.setCurrentTime(colorMatchGameModel.getCurrentTime() - 100);
                 colorMatchGameView.displayProgressBar(colorMatchGameModel.getStartTime(), colorMatchGameModel.getCurrentTime());
-                colorMatchGameUpdater.updateBackgroundColor();
-                // check if there is still some time left in the progress bar
+                //colorMatchGameUpdater.updateBackgroundColor();
+
+                // Check if there is still some time left in the progress bar
                 if (colorMatchGameModel.getCurrentTime() > 0) {
-                    handler.postDelayed(this, 100);
+                    handler.postDelayed(runnable, 100);
                 } else {
-                    // check if the colors of the arrow and the button are the same
-                    if (colorMatchGameModel.getButtonState() == colorMatchGameModel.getArrowState()) {
-                        // increase points and show them
+                    // Check if the colors of the arrow and the button are the same
+                    if (buttonState == colorMatchGameModel.getArrowState()) {
+                        // Increase points and show them
                         colorMatchGameModel.setCurrentPoints(colorMatchGameModel.getCurrentPoints() + 1);
                         colorMatchGameView.displayPoints(colorMatchGameModel.getCurrentPoints());
 
-                        // make the speed higher after every turn/if the speed is 1 second make it again 2 seconds
+                        // Make the speed higher after every turn/if the speed is 1 second make it again 2 seconds
                         if (colorMatchGameModel.getCurrentPoints() % 5 == 0) {
-                            // Increase the speed after every 5 points (adjust as needed)
-                            colorMatchGameModel.setStartTime(colorMatchGameModel.getStartTime() - 2000);
+                            // Increase the speed after every 5 points
+                            colorMatchGameModel.setStartTime(colorMatchGameModel.getStartTime() - 2000); // or any value you desire
                             if (colorMatchGameModel.getStartTime() < 1000) {
                                 colorMatchGameModel.setStartTime(2000);
                             }
+                            colorMatchGameView.displayProgressBar(colorMatchGameModel.getStartTime(), colorMatchGameModel.getStartTime());
                         }
-                        colorMatchGameView.displayProgressBar(colorMatchGameModel.getStartTime(), colorMatchGameModel.getStartTime());
 
-                        // generate a new color for the arrow
+                        // Generate a new color for the arrow
                         colorMatchGameModel.setArrowState(new Random().nextInt(4) + 1);
                         colorMatchGameView.setArrowImage(colorMatchGameModel.getArrowState());
+
+                        colorMatchGameModel.setCurrentTime(colorMatchGameModel.getStartTime());
+                        colorMatchGameView.displayProgressBar(colorMatchGameModel.getStartTime(), colorMatchGameModel.getStartTime());
 
                         handler.postDelayed(runnable, 100);
                     } else {
                         colorMatchGameView.getIvButton().setEnabled(false);
-                        //game over
-                        colorMatchGameView.displayRetryButton(true);
+                        //Toast.makeText(colorMatchGameView.getContext(), "GAME OVER!", Toast.LENGTH_SHORT).show();
+                        btnRetry.setVisibility(View.VISIBLE);
                     }
                 }
             }
         };
-        // start the game loop
         handler.postDelayed(runnable, 100);
     }
+
 
     private void resetGame() {
         // Reset all game variables to their initial values

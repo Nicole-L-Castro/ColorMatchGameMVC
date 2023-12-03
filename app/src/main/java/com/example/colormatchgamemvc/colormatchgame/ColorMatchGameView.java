@@ -91,7 +91,7 @@ public class ColorMatchGameView {
     }
 
     public void displayPoints(int currentPoints){
-        tv_points.setText("Points: " + currentPoints);
+        tv_points.setText("POINTS: " + currentPoints);
     }
 
     public void displayProgressBar(int max, int progress){
@@ -103,7 +103,5 @@ public class ColorMatchGameView {
         btnRetry.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    public void setRotation(int buttonState, int buttonDrawable) {
-
-    }
+    public void setRotation(int buttonState, int buttonDrawable) {}
 }

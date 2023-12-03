@@ -14,7 +14,9 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="Score: 0" />
+        android:text="Score: 0"
+        android:textSize="24sp"
+        android:textColor="@android:color/black"/>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -24,7 +26,8 @@
         android:layout_below="@+id/tv_points"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"/>
+        android:layout_marginTop="60dp"
+        android:progressTint="@android:color/black"/>
 
     <include layout="@layout/layout_buttons"
         android:layout_marginTop="20dp"
@@ -38,7 +41,7 @@
         android:id="@+id/btnRetry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Retry"
+        android:text="RETRY"
         android:layout_below="@id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"/>
